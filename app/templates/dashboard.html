@@ -73,8 +73,29 @@
                 <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">Select your analysis mode and describe your
                     industrial scenario to get started.</p>
 
+                <!-- Suggestions -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full mt-2 mb-8">
+                    <button @click="mode = 'intelligence'; fillPrompt('Vendor requires VPN access to troubleshoot the main SCADA historian server.')" 
+                            class="p-4 text-left rounded-2xl bg-white dark:bg-gray-900 border border-sand-200 dark:border-gray-800 hover:border-sand-300 dark:hover:border-cyan-500/50 hover:shadow-md dark:hover:bg-gray-800/50 transition-all group">
+                        <span class="block font-bold text-gray-800 dark:text-gray-200 mb-1.5 flex items-center gap-2 text-sm">
+                            <span class="w-1.5 h-1.5 rounded-full bg-sand-300 dark:bg-cyan-500"></span>
+                            Intelligence Mode
+                        </span>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed italic">"Analyze vendor VPN access to SCADA..."</p>
+                    </button>
+                    
+                    <button @click="mode = 'procedure'; fillPrompt('Create a step-by-step procedure to patch an Engineering Workstation in the production zone.')" 
+                            class="p-4 text-left rounded-2xl bg-white dark:bg-gray-900 border border-sand-200 dark:border-gray-800 hover:border-sand-300 dark:hover:border-blue-500/50 hover:shadow-md dark:hover:bg-gray-800/50 transition-all group">
+                        <span class="block font-bold text-gray-800 dark:text-gray-200 mb-1.5 flex items-center gap-2 text-sm">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                            Procedure Mode
+                        </span>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed italic">"Step-by-step patch management for EWS..."</p>
+                    </button>
+                </div>
+
                 <!-- Contact / LinkedIn -->
-                <div class="flex items-center justify-center gap-4 mb-8">
+                <div class="flex items-center justify-center gap-4">
                     <a href="https://www.linkedin.com/in/reem-m-alhamad-a71b77250?utm_source=share_via&utm_content=profile&utm_medium=member_ios" 
                        target="_blank" 
                        rel="noopener noreferrer"
