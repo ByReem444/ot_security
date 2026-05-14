@@ -132,7 +132,7 @@ class GroqService:
             }
         }
 
-    def analyze_ot_request(self, user_input, mode='intelligence'):
+    def analyze_ot_request(self, user_input, mode='intelligence', vendor='', category=''):
         """
         Analyze an OT operational/cybersecurity request using Groq LLM with fallback support.
         If the primary model reaches rate limits, it automatically tries backup models.
@@ -157,13 +157,13 @@ class GroqService:
 
         for current_model in models_to_try:
             try:
-                logger.info(f"Attempting analysis with model: {current_model} in mode: {mode}")
+                logger.info(f"Attempting analysis with model: {current_model} in mode: {mode} for vendor: {vendor}")
                 
                 response = self.client.chat.completions.create(
                     model=current_model,
                     messages=[
-                        {"role": "system", "content": build_system_prompt(mode)},
-                        {"role": "user", "content": build_analysis_prompt(sanitized_input, mode)}
+                        {"role": "system", "content": build_system_prompt(mode, vendor, category)},
+                        {"role": "user", "content": build_analysis_prompt(sanitized_input, mode, vendor, category)}
                     ],
                     temperature=0.3,
                     max_tokens=4096,
