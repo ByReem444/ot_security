@@ -3,12 +3,12 @@ Dashboard routes — main interface, history, analysis detail.
 """
 
 import uuid
-from flask import Blueprint, render_template, abort, session
+from flask import Blueprint, render_template, abort, session, request
 
 from app import db
 from app.models.analysis import Analysis
 from app.models.visitor import Visitor
-from app.utils.helpers import severity_bg, decision_icon, time_ago, calculate_risk_score
+from app.utils.helpers import severity_bg, decision_icon, time_ago, calculate_risk_score, is_robot
 
 dashboard_bp = Blueprint('dashboard', __name__)
 
@@ -26,13 +26,15 @@ def index():
     if 'session_id' not in session:
         new_session_id = uuid.uuid4().hex
         session['session_id'] = new_session_id
-        # Record new visitor
-        visitor = Visitor(session_id=new_session_id)
-        db.session.add(visitor)
-        try:
-            db.session.commit()
-        except:
-            db.session.rollback()
+        # Record new visitor if not a bot
+        user_agent = request.headers.get('User-Agent')
+        if not is_robot(user_agent):
+            visitor = Visitor(session_id=new_session_id)
+            db.session.add(visitor)
+            try:
+                db.session.commit()
+            except:
+                db.session.rollback()
 
     recent_analyses = Analysis.query.filter_by(session_id=session['session_id'])\
         .order_by(Analysis.created_at.desc()).limit(5).all()
@@ -50,12 +52,14 @@ def history():
     if 'session_id' not in session:
         new_session_id = uuid.uuid4().hex
         session['session_id'] = new_session_id
-        visitor = Visitor(session_id=new_session_id)
-        db.session.add(visitor)
-        try:
-            db.session.commit()
-        except:
-            db.session.rollback()
+        user_agent = request.headers.get('User-Agent')
+        if not is_robot(user_agent):
+            visitor = Visitor(session_id=new_session_id)
+            db.session.add(visitor)
+            try:
+                db.session.commit()
+            except:
+                db.session.rollback()
         
     page = 1
     try:

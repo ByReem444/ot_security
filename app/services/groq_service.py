@@ -47,7 +47,7 @@ class GroqService:
 
         return sanitized
 
-    def _parse_response(self, raw_content):
+    def _parse_response(self, raw_content, mode='intelligence'):
         """
         Parse the LLM response into a structured dict.
         Handles cases where the model wraps JSON in markdown code blocks.
@@ -66,7 +66,7 @@ class GroqService:
 
         try:
             result = json.loads(content)
-            return self._validate_structure(result)
+            return self._validate_structure(result, mode)
         except json.JSONDecodeError as e:
             logger.error(f"Failed to parse LLM JSON response: {e}")
             logger.debug(f"Raw content: {content[:500]}")
@@ -75,13 +75,24 @@ class GroqService:
             if json_match:
                 try:
                     result = json.loads(json_match.group())
-                    return self._validate_structure(result)
+                    return self._validate_structure(result, mode)
                 except json.JSONDecodeError:
                     pass
             return self._get_fallback_response("Failed to parse AI response.")
 
-    def _validate_structure(self, result):
-        """Ensure the response has all required fields."""
+    def _validate_structure(self, result, mode='intelligence'):
+        """Ensure the response has all required fields based on the mode."""
+        if mode == 'procedure':
+            required_fields = ['procedure_title', 'operational_impact', 'steps']
+            for field in required_fields:
+                if field not in result:
+                    result[field] = "Information not available" if field != 'steps' else []
+            
+            if 'standards_alignment' not in result:
+                result['standards_alignment'] = {'iec_62443': [], 'otcc': []}
+            return result
+
+        # Intelligence mode (default)
         required_fields = [
             'what_you_should_know',
             'what_you_should_ask',
@@ -121,7 +132,7 @@ class GroqService:
             }
         }
 
-    def analyze_ot_request(self, user_input):
+    def analyze_ot_request(self, user_input, mode='intelligence'):
         """
         Analyze an OT operational/cybersecurity request using Groq LLM with fallback support.
         If the primary model reaches rate limits, it automatically tries backup models.
@@ -134,6 +145,7 @@ class GroqService:
         models_to_try = [
             self.model, # The one from .env (usually llama-3.3-70b-versatile)
             "llama-3.3-70b-versatile",
+            "llama-3.1-8b-instant",
             "gemma2-9b-it"
         ]
         
@@ -145,13 +157,13 @@ class GroqService:
 
         for current_model in models_to_try:
             try:
-                logger.info(f"Attempting analysis with model: {current_model}")
+                logger.info(f"Attempting analysis with model: {current_model} in mode: {mode}")
                 
                 response = self.client.chat.completions.create(
                     model=current_model,
                     messages=[
-                        {"role": "system", "content": build_system_prompt()},
-                        {"role": "user", "content": build_analysis_prompt(sanitized_input)}
+                        {"role": "system", "content": build_system_prompt(mode)},
+                        {"role": "user", "content": build_analysis_prompt(sanitized_input, mode)}
                     ],
                     temperature=0.3,
                     max_tokens=4096,
@@ -160,7 +172,7 @@ class GroqService:
 
                 raw_content = response.choices[0].message.content
                 logger.info(f"Success with model {current_model}. Parsing response...")
-                return self._parse_response(raw_content)
+                return self._parse_response(raw_content, mode)
 
             except Exception as e:
                 error_str = str(e).lower()

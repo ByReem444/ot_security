@@ -43,6 +43,10 @@ def calculate_risk_score(result):
     """
     Calculate a numeric risk score (0-100) based on analysis results.
     """
+    # If it's a procedure mode, risk score is not applicable (return 0)
+    if 'procedure_title' in result:
+        return 0
+
     score = 25  # Base score
 
     # Number of risks identified (max 40 points)
@@ -96,3 +100,22 @@ def time_ago(dt):
     else:
         days = int(seconds / 86400)
         return f'{days}d ago'
+
+
+def is_robot(user_agent):
+    """Check if the user agent belongs to a known bot/crawler."""
+    if not user_agent:
+        return False  # If no UA, assume it's a browser for safety
+    
+    bots = [
+        'googlebot', 'bingbot', 'yandexbot', 'duckduckbot', 'slurp', 
+        'baiduspider', 'ia_archiver', 'facebookexternalhit', 'twitterbot', 
+        'rogerbot', 'linkedinbot', 'embedly', 'quora link preview', 
+        'showyoubot', 'outbrain', 'pinterest', 'developers.google.com',
+        'slackbot', 'vkshare', 'redditbot', 'applebot', 'whatsapp', 'flipboard',
+        'tumblr', 'bitlybot', 'skypeuripreview', 'nuzzel', 'discordbot', 
+        'google-read-aloud', 'qwantify'
+    ]
+    ua = user_agent.lower()
+    # Only block if it's a very clear bot signature
+    return any(bot in ua for bot in bots)

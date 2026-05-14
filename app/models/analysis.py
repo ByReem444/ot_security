@@ -13,6 +13,7 @@ class Analysis(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     scenario = db.Column(db.Text, nullable=False)
+    analysis_type = db.Column(db.String(50), default='intelligence') # 'intelligence' or 'procedure'
     result_json = db.Column(db.Text, nullable=False)  # JSON string
     risk_score = db.Column(db.Float, default=0.0)
     severity = db.Column(db.String(20), default='Medium')

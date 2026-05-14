@@ -9,9 +9,10 @@ from flask import Blueprint, request, jsonify, session
 
 from app import db, limiter, csrf
 from app.models.analysis import Analysis
+from app.models.visitor import Visitor
 from app.services.groq_service import GroqService
 from app.utils.validators import validate_scenario
-from app.utils.helpers import calculate_risk_score
+from app.utils.helpers import calculate_risk_score, is_robot
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +40,8 @@ def analyze():
     if not data or 'scenario' not in data:
         return jsonify({'error': 'Missing "scenario" field in request body.'}), 400
 
-    scenario = data['scenario']
+    scenario = data.get('scenario', '')
+    mode = data.get('mode', 'intelligence') # 'intelligence' or 'procedure'
 
     # Validate the input
     is_valid, error_msg = validate_scenario(scenario)
@@ -47,14 +49,16 @@ def analyze():
         return jsonify({'error': error_msg}), 400
 
     try:
-        # Call the AI engine
-        result = groq_service.analyze_ot_request(scenario)
+        # Call the AI engine with the selected mode
+        result = groq_service.analyze_ot_request(scenario, mode=mode)
 
         # Calculate risk score
         risk_score = calculate_risk_score(result)
 
         # Extract severity based on risk score
-        if risk_score >= 80:
+        if mode == 'procedure':
+            severity = 'Low' # Procedures are informational
+        elif risk_score >= 80:
             severity = 'Critical'
         elif risk_score >= 60:
             severity = 'High'
@@ -67,14 +71,16 @@ def analyze():
         if 'session_id' not in session:
             new_session_id = uuid.uuid4().hex
             session['session_id'] = new_session_id
-            from app.models.visitor import Visitor
-            visitor = Visitor(session_id=new_session_id)
-            db.session.add(visitor)
-            db.session.commit()
+            user_agent = request.headers.get('User-Agent')
+            if not is_robot(user_agent):
+                visitor = Visitor(session_id=new_session_id)
+                db.session.add(visitor)
+                db.session.commit()
 
         # Save to database
         analysis = Analysis(
             scenario=scenario.strip(),
+            analysis_type=mode,
             result_json=json.dumps(result, ensure_ascii=False),
             risk_score=risk_score,
             severity=severity,
@@ -88,6 +94,7 @@ def analyze():
         return jsonify({
             'id': analysis.id,
             'scenario': analysis.scenario,
+            'analysis_type': analysis.analysis_type,
             'result': result,
             'risk_score': risk_score,
             'severity': severity,

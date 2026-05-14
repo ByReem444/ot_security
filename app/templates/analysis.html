@@ -29,7 +29,59 @@
         <p class="text-gray-800 dark:text-gray-200 text-lg leading-relaxed whitespace-pre-wrap font-medium">"{{ analysis.scenario }}"</p>
     </div>
 
-    <!-- Main Results Grid -->
+    <!-- Main Results Container -->
+    {% if analysis.analysis_type == 'procedure' %}
+    <!-- PROCEDURE VIEW -->
+    <div class="space-y-6">
+        <div class="analysis-card p-6 sm:p-8 bg-white border border-sand-200 shadow-sm relative visible overflow-hidden">
+            <div class="card-accent card-accent-blue"></div>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ result.get('procedure_title') }}</h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400 italic mb-8">Operational Impact: {{ result.get('operational_impact') }}</p>
+
+            <div class="space-y-8 relative">
+                <!-- Vertical Line -->
+                <div class="absolute left-[11px] top-2 bottom-2 w-0.5 bg-sand-100 dark:bg-gray-800"></div>
+
+                {% for step in result.get('steps', []) %}
+                <div class="relative pl-10">
+                    <div class="absolute left-0 top-0 w-6 h-6 rounded-full bg-sand-300 dark:bg-cyan-600 text-white flex items-center justify-center text-xs font-bold shadow-md shadow-sand-300/30 dark:shadow-cyan-500/20">
+                        {{ step.step_number }}
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3">{{ step.title }}</h3>
+                    <ul class="space-y-2 mb-4">
+                        {% for task in step.get('guidelines', []) %}
+                        <li class="flex items-start gap-2 text-gray-700 dark:text-gray-300 text-sm">
+                            <span class="text-sand-300 dark:text-cyan-500 mt-1">•</span>
+                            {{ task }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="p-4 bg-sand-50/50 dark:bg-gray-800/40 rounded-xl border border-sand-200 dark:border-gray-700">
+                        <p class="text-xs text-gray-600 dark:text-gray-400 italic"><span class="font-bold not-italic">Rationale:</span> {{ step.rationale }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Standards Alignment Card -->
+        <div class="analysis-card p-6 bg-white border border-sand-200 shadow-sm relative visible overflow-hidden">
+            <div class="card-accent card-accent-purple"></div>
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Compliance & Standards Alignment</h2>
+            <div class="flex flex-wrap gap-3">
+                {% set standards = result.get('standards_alignment', {}) %}
+                {% for std in standards.get('iec_62443', []) %}
+                <span class="px-3 py-1.5 bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-100 dark:border-teal-500/20 rounded-lg text-xs font-bold">IEC 62443: {{ std }}</span>
+                {% endfor %}
+                {% for std in standards.get('otcc', []) %}
+                <span class="px-3 py-1.5 bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20 rounded-lg text-xs font-bold">OTCC: {{ std }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- INTELLIGENCE VIEW (Original) -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         <!-- Left Column: Core Analysis -->
@@ -185,5 +237,6 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}
