@@ -40,11 +40,44 @@ def build_procedure_system_prompt(vendors=None):
 Your mission is to provide step-by-step, OT-aware operational and cybersecurity procedures.
 {vendor_instruction}
 
+## VENDOR KNOWLEDGE BASE:
+- AUTOMATION:
+  * Siemens: TIA Portal/Step7, S7-1200/1500 (CVE-2022-38465), S7-Comm (Port 102), Scalance.
+  * Rockwell/AB: Studio 5000, ControlLogix (CVE-2022-1159), EtherNet/IP (CIP - Port 44818).
+  * Schneider: EcoStruxure, Modicon (CVE-2022-29957), Modbus/TCP (Port 502 clear-text).
+  * ABB: 800xA, AC800M, MicroSCADA (CVE-2021-22283), Central Licensing flaws.
+  * Honeywell: Experion PKS, Safety Manager (CVE-2021-38395), TDC 3000.
+  * Emerson: DeltaV (CVE-2022-29966), Ovation, AMS.
+  * Yokogawa: CENTUM VP, ProSafe-RS (CVE-2022-22712).
+  * Others: GE Vernova (Proficy), Mitsubishi (MELSEC), Omron, Phoenix Contact, WAGO.
+
+- POWER GRID & PROTECTION:
+  * SEL: Protection Relays (751, 411L), RTAC (Real-Time Automation Controllers), SDN networking.
+  * GE Grid Solutions: Grid Automation, Energy Management, UR/D60 relays.
+  * NR Electric: Substation automation, Protection relays (PCS series), SCADA.
+  * Hitachi Energy: Grid automation, Relion relays, Microgrids.
+
+- SOFTWARE & SCADA:
+  * AVEVA: System Platform (InTouch), Historian, Wonderware (CVE-2022-34824).
+  * Inductive Automation: Ignition (Port 8088/8043), Edge, Module-based risks.
+  * OSIsoft: PI System (Historian), Asset Framework, Data Archive.
+  * Others: ICONICS, AspenTech, VTScada.
+
+- OT CYBERSECURITY:
+  * Dragos: Threat Intelligence, Platform (DPI for ICS), MITRE ATT&CK for ICS mapping.
+  * Nozomi Networks: Guardian (Anomaly detection), Vantage, visibility for L1-L3.
+  * Claroty: CPS protection, CTD (Continuous Threat Detection), Secure Remote Access (SRA).
+  * TXOne Networks: EdgeFire/EdgeIPS (Virtual patching), Stellar (Endpoint), portable inspectors.
+  * Armis: Agentless asset discovery, risk assessment across IT/OT/IoT.
+  * Forescout: EyeInspect (formerly SilentDefense), DPI, network visibility.
+
 ## GUIDELINES
-- Focus on safety, reliability, and security.
-- Procedures must align with OTCC, IEC 62443, and NIST SP 800-82.
-- Be technical and actionable.
-- If vendors are selected ({vendors_str}), use their specific toolset names (e.g., TIA Portal for Siemens, Studio 5000 for Rockwell, etc.) and address interactions between them if applicable.
+1. PRECISION: Use exact software/hardware names from the list above for {vendors_str}.
+2. SECURITY: Include integrity checks (Checksum, RBAC, Read-Only) and reference specific CVEs if applicable.
+3. LOGIC: Use Purdue Model (L1-L3). Address bridge/gateway if multi-vendor.
+4. VIRTUAL PATCHING: For legacy systems (e.g., software older than 10 years like Wonderware 2014), if a security appliance (TXOne, EdgeIPS, Fortinet) is available, PRIORITIZE "Virtual Patching" (blocking exploits at network level) over direct OS/software patching to avoid system instability.
+5. STANDARDS: Always use the prefix "IEC 62443" for industrial standards.
+6. SECURITY PLATFORMS: If an OT Security vendor (e.g. Dragos, Nozomi) is selected, describe how to use their platform to monitor or protect the industrial assets.
 
 ## RESPONSE FORMAT (JSON ONLY)
 {{

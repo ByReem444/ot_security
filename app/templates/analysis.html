@@ -33,7 +33,7 @@
     {% if analysis.analysis_type == 'procedure' %}
     <!-- PROCEDURE VIEW -->
     <div class="space-y-6">
-        <div class="analysis-card p-6 sm:p-8 bg-white border border-sand-200 shadow-sm relative visible overflow-hidden">
+        <div class="analysis-card p-6 sm:p-8 bg-white dark:bg-gray-900/40 border border-sand-200 dark:border-gray-800 shadow-sm relative visible overflow-hidden backdrop-blur-xl">
             <div class="card-accent card-accent-blue"></div>
             <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ result.get('procedure_title') }}</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400 italic mb-8">Operational Impact: {{ result.get('operational_impact') }}</p>
@@ -48,16 +48,15 @@
                         {{ step.step_number }}
                     </div>
                     <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3">{{ step.title }}</h3>
-                    <ul class="space-y-2 mb-4">
+                    <ul class="space-y-2 mb-4 list-disc pl-5">
                         {% for task in step.get('guidelines', []) %}
-                        <li class="flex items-start gap-2 text-gray-700 dark:text-gray-300 text-sm">
-                            <span class="text-sand-300 dark:text-cyan-500 mt-1">•</span>
+                        <li class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                             {{ task }}
                         </li>
                         {% endfor %}
                     </ul>
                     <div class="p-4 bg-sand-50/50 dark:bg-gray-800/40 rounded-xl border border-sand-200 dark:border-gray-700">
-                        <p class="text-xs text-gray-600 dark:text-gray-400 italic"><span class="font-bold not-italic">Rationale:</span> {{ step.rationale }}</p>
+                        <p class="text-xs text-gray-600 dark:text-gray-400 italic leading-relaxed"><span class="font-bold not-italic text-sand-300 dark:text-cyan-500">Rationale:</span> {{ step.rationale }}</p>
                     </div>
                 </div>
                 {% endfor %}
@@ -65,7 +64,7 @@
         </div>
 
         <!-- Standards Alignment Card -->
-        <div class="analysis-card p-6 bg-white border border-sand-200 shadow-sm relative visible overflow-hidden">
+        <div class="analysis-card p-6 bg-white dark:bg-gray-900/40 border border-sand-200 dark:border-gray-800 shadow-sm relative visible overflow-hidden backdrop-blur-xl">
             <div class="card-accent card-accent-purple"></div>
             <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Compliance & Standards Alignment</h2>
             <div class="flex flex-wrap gap-3">
@@ -87,11 +86,11 @@
         <!-- Left Column: Core Analysis -->
         <div class="md:col-span-2 space-y-6">
             <!-- What You Should Know -->
-            <div class="analysis-card p-6 bg-white border border-sand-200 shadow-sm relative visible overflow-hidden">
+            <div class="analysis-card p-6 bg-white dark:bg-gray-900/40 border border-sand-200 dark:border-gray-800 shadow-sm relative visible overflow-hidden backdrop-blur-xl">
                 <div class="card-accent card-accent-cyan"></div>
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-sand-300 dark:text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    What You Should Know
+                    1. What You Should Know
                 </h2>
                 <ul class="space-y-3">
                     {% for item in result.get('what_you_should_know', []) %}
@@ -103,29 +102,46 @@
                 </ul>
             </div>
 
-            <!-- What You Should Ask -->
-            <div class="analysis-card p-6 bg-white border border-sand-200 shadow-sm relative visible overflow-hidden stagger-1">
+            <!-- Technical Analysis -->
+            <div class="analysis-card p-6 bg-white dark:bg-gray-900/40 border border-sand-200 dark:border-gray-800 shadow-sm relative visible overflow-hidden stagger-1 backdrop-blur-xl">
                 <div class="card-accent card-accent-blue"></div>
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-sand-300 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    Important Questions to Ask
+                    <svg class="w-5 h-5 text-sand-300 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" /></svg>
+                    2. Technical Analysis
                 </h2>
                 <ul class="space-y-3">
-                    {% for item in result.get('what_you_should_ask', []) %}
+                    {% for item in result.get('technical_analysis', []) %}
                     <li class="flex items-start gap-3">
-                        <svg class="w-4 h-4 text-sand-300 dark:text-blue-400 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <span class="text-gray-700 dark:text-gray-300 leading-relaxed font-medium italic">{{ item }}</span>
+                        <svg class="w-4 h-4 text-sand-300 dark:text-blue-400 mt-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                        <span class="text-gray-700 dark:text-gray-300 leading-relaxed">{{ item }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Attack Vectors -->
+            <div class="analysis-card p-6 bg-white dark:bg-gray-900/40 border border-sand-200 dark:border-gray-800 shadow-sm relative visible overflow-hidden stagger-2 backdrop-blur-xl">
+                <div class="card-accent card-accent-orange"></div>
+                <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.601a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" /></svg>
+                    3. Attack Vectors
+                </h2>
+                <ul class="space-y-3">
+                    {% for item in result.get('attack_vectors', []) %}
+                    <li class="flex items-start gap-3 bg-orange-50/30 dark:bg-orange-500/5 border border-orange-100 dark:border-orange-500/10 p-3 rounded-lg">
+                        <svg class="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        <span class="text-orange-800 dark:text-orange-300 font-medium">{{ item }}</span>
                     </li>
                     {% endfor %}
                 </ul>
             </div>
 
             <!-- Expected Risks -->
-            <div class="analysis-card p-6 bg-white border border-sand-200 shadow-sm relative visible overflow-hidden stagger-2">
+            <div class="analysis-card p-6 bg-white dark:bg-gray-900/40 border border-sand-200 dark:border-gray-800 shadow-sm relative visible overflow-hidden stagger-3 backdrop-blur-xl">
                 <div class="card-accent card-accent-red"></div>
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                    Expected Risks
+                    4. Expected Risks
                 </h2>
                 <ul class="space-y-3">
                     {% for item in result.get('expected_risks', []) %}
@@ -138,11 +154,11 @@
             </div>
 
             <!-- Recommended Controls -->
-            <div class="analysis-card p-6 bg-white border border-sand-200 shadow-sm relative visible overflow-hidden stagger-3">
+            <div class="analysis-card p-6 bg-white dark:bg-gray-900/40 border border-sand-200 dark:border-gray-800 shadow-sm relative visible overflow-hidden stagger-4 backdrop-blur-xl">
                 <div class="card-accent card-accent-green"></div>
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-green-500 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    Recommended Security Controls
+                    5. Recommended Controls
                 </h2>
                 <ul class="space-y-3">
                     {% for item in result.get('recommended_controls', []) %}
@@ -159,7 +175,7 @@
         <div class="space-y-6">
             
             <!-- Risk Score Card -->
-            <div class="glow-card p-6 flex flex-col items-center text-center stagger-4 bg-white border border-sand-200">
+            <div class="glow-card p-6 flex flex-col items-center text-center stagger-5 bg-white dark:bg-gray-900/40 border border-sand-200 dark:border-gray-800 backdrop-blur-xl">
                 <h3 class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-4">Risk Level</h3>
                 
                 <div class="relative w-28 h-28 flex items-center justify-center mb-4">
@@ -179,7 +195,7 @@
             </div>
 
             <!-- References & Standards Card -->
-            <div class="analysis-card p-6 bg-white border border-sand-200 shadow-sm relative visible overflow-hidden stagger-5">
+            <div class="analysis-card p-6 bg-white dark:bg-gray-900/40 border border-sand-200 dark:border-gray-800 shadow-sm relative visible overflow-hidden stagger-6 backdrop-blur-xl">
                 <div class="card-accent card-accent-purple"></div>
                 <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-purple-500 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
