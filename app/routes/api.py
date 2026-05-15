@@ -42,8 +42,7 @@ def analyze():
 
     scenario = data.get('scenario', '')
     mode = data.get('mode', 'intelligence') # 'intelligence' or 'procedure'
-    vendor = data.get('vendor', '')
-    category = data.get('category', '')
+    vendors = data.get('vendors', []) # List of selected vendors
 
     # Validate the input
     is_valid, error_msg = validate_scenario(scenario)
@@ -51,8 +50,8 @@ def analyze():
         return jsonify({'error': error_msg}), 400
 
     try:
-        # Call the AI engine with the selected mode and vendor context
-        result = groq_service.analyze_ot_request(scenario, mode=mode, vendor=vendor, category=category)
+        # Call the AI engine with the selected mode and multi-vendor context
+        result = groq_service.analyze_ot_request(scenario, mode=mode, vendors=vendors)
 
         # Calculate risk score
         risk_score = calculate_risk_score(result)

@@ -132,38 +132,37 @@ class GroqService:
             }
         }
 
-    def analyze_ot_request(self, user_input, mode='intelligence', vendor='', category=''):
+    def analyze_ot_request(self, user_input, mode='intelligence', vendors=None):
         """
-        Analyze an OT operational/cybersecurity request using Groq LLM with fallback support.
-        If the primary model reaches rate limits, it automatically tries backup models.
+        Analyze an OT operational/cybersecurity request using Groq LLM.
+        Supports multi-vendor context.
         """
+        if vendors is None:
+            vendors = []
+            
         if not self.client:
             logger.error("Groq client not initialized. Check GROQ_API_KEY.")
             return self._get_fallback_response("Groq API key not configured.")
 
         # List of models to try in order of preference
         models_to_try = [
-            self.model, # The one from .env (usually llama-3.3-70b-versatile)
+            self.model,
             "llama-3.3-70b-versatile",
-            "llama-3.1-8b-instant",
-            "gemma2-9b-it"
+            "llama-3.1-8b-instant"
         ]
-        
-        # Remove duplicates while preserving order
-        models_to_try = list(dict.fromkeys(models_to_try))
         
         sanitized_input = self._sanitize_input(user_input)
         last_error = ""
 
         for current_model in models_to_try:
             try:
-                logger.info(f"Attempting analysis with model: {current_model} in mode: {mode} for vendor: {vendor}")
+                logger.info(f"Attempting analysis with model: {current_model} in mode: {mode} for vendors: {vendors}")
                 
                 response = self.client.chat.completions.create(
                     model=current_model,
                     messages=[
-                        {"role": "system", "content": build_system_prompt(mode, vendor, category)},
-                        {"role": "user", "content": build_analysis_prompt(sanitized_input, mode, vendor, category)}
+                        {"role": "system", "content": build_system_prompt(mode, vendors=vendors)},
+                        {"role": "user", "content": build_analysis_prompt(sanitized_input, mode, vendors=vendors)}
                     ],
                     temperature=0.3,
                     max_tokens=4096,
